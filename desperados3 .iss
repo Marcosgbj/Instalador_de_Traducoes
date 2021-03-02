@@ -23,6 +23,7 @@ LicenseFile=C:\GBJ\Termo de Uso.txt
 InfoBeforeFile=C:\GBJ\Créditos dos Tradutores.txt
 SetupIconFile=C:\GBJ\Desperados III.ico
 DisableDirPage=true
+Uninstallable=no
 
 [Languages]
 Name: brazilianportuguese; MessagesFile: compiler:Languages\BrazilianPortuguese.isl
