@@ -1,9 +1,10 @@
-; Script para TraduÁ„o de Desperados 3.
-
-#define MyAppName "TraduÁ„o Desperados 3"
+#define MyAppName "Tradu√ß√£o Desperados 3 v2.0"
 #define MyAppVersion "2.0"
-#define MyAppPublisher "JUNIORGBJ & Contributors"
+#define MyAppPublisher "JUNIORGBJ"
 #define MyAppURL "https://github.com/JUNIORGBJ/DESPERADOS_3_PT-BR"
+#define SplS "1500"
+#define SplR "3000"
+#define SplE "1500"
 
 [Setup]
 AppId={{EE2317BF-2C30-4780-ADE1-3A5F597C4D31}
@@ -13,44 +14,81 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-AppCopyright=TraduÁıes gBj
-AppVerName=TraduÁ„o Desperados 3
-DefaultDirName={autopf}\{#MyAppName}
-DisableDirPage=true
-DisableProgramGroupPage=true
+AppCopyright=Tradu√ß√µes gBj
+AppVerName=Tradu√ß√£o Desperados 3
+DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=true
 LicenseFile=C:\GBJ\Termo de Uso.txt
-InfoBeforeFile=C:\GBJ\CrÈditos dos Tradutores.txt
+InfoBeforeFile=C:\GBJ\Cr√©ditos dos Tradutores.txt
 SetupIconFile=C:\GBJ\Desperados III.ico
-DisableWelcomePage=no
-OutputBaseFilename=Traducao_Desperados_3
-Compression=lzma
-SolidCompression=true
-WizardStyle=modern
-WindowShowCaption=false
-WindowStartMaximized=false
-WindowResizable=false
-WindowVisible=false
-DisableStartupPrompt=true
-Uninstallable=false
-CreateAppDir=false
+DisableDirPage=true
 
 [Languages]
 Name: brazilianportuguese; MessagesFile: compiler:Languages\BrazilianPortuguese.isl
 
+[Files]
+Source: "isgsg.dll"; Flags: "DontCopy";
+Source: "splash.png"; Flags: "DontCopy";
+Source: C:\GBJ\keyboard\*; DestDir: {code:CopyDir}\Desperados III_Data\StreamingAssets\keyboard; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: C:\GBJ\loca\*; DestDir: {code:CopyDir}\Desperados III_Data\StreamingAssets\loca; Flags: ignoreversion recursesubdirs createallsubdirs
+
 [Code]
+//Layout do Bot√£o Projetos//
+var
+  Website: TNewButton;
+
+procedure WebsiteClick(Sender: TObject); forward;
+procedure RedesignWizardForm;
+begin
+  Website := TNewButton.Create(WizardForm);
+  with Website do
+  begin
+    Name := 'Projetos';
+    Parent := WizardForm;
+    Left := ScaleX(10);
+    Top := ScaleY(328);
+    Width := ScaleX(75);
+    Height := ScaleY(23);
+    OnClick := @WebsiteClick;
+  end;
+
+  Website.TabOrder := 5;
+end;
+
+//Clique do Bot√£o Projetos//
+procedure WebsiteClick(Sender: TObject);
+var
+  ErrorCode: Integer;
+begin
+ShellExecAsOriginalUser('open', 'https://github.com/JUNIORGBJ?tab=repositories', '', '', SW_SHOWNORMAL, ewNoWait,ErrorCode);
+end;
+
+//C√≥digo do SplashScreen//
+procedure ShowSplashScreen(p1:HWND;p2:string;p3,p4,p5,p6,p7:integer;p8:boolean;p9:Cardinal;p10:integer); external 'ShowSplashScreen@files:isgsg.dll stdcall delayload';
+procedure RunSplash();
+begin
+ ExtractTemporaryFile('splash.png');
+ ShowSplashScreen(WizardForm.Handle,ExpandConstant('{tmp}')+'\splash.png',{#SplS},{#SplR},{#SplE},0,255,False,$FFFFFF,10);
+end;
+
+//C√≥digo pasta de Instala√ß√£o//
 var
   CopyDirPage: TInputDirWizardPage;
 
-procedure InitializeWizard();
+procedure InitializeWizard;
 begin
+  RedesignWizardForm;
   CopyDirPage :=
-    CreateInputDirPage(wpSelectDir, 'Selecionar local de instalaÁ„o', '',  '', False, '');
-  CopyDirPage.Add('Use a pasta padr„o Steam ou procure a pasta onde contÈm o arquivo "Desperados III.exe"');
+    CreateInputDirPage(wpSelectDir, 'Selecionar local de instala√ß√£o', '',  '', False, '');
+  CopyDirPage.Add('Use a pasta padr√£o Steam ou procure a pasta onde cont√©m o arquivo "Desperados III.exe"');
   CopyDirPage.Values[0] := ExpandConstant('{pf32}\Steam\steamapps\common\Desperados III');
+  begin
+  RunSplash();
+  end;
 end;
 
+//Codigo Sair do Instalador//
 procedure ExitProcess(exitCode:integer);
  external 'ExitProcess@kernel32.dll stdcall';
 
@@ -59,38 +97,34 @@ begin
   Result := CopyDirPage.Values[0];
 end;
 
+//Mensagem de Arquivo n√£o encontrado//
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
  if CurStep = ssInstall then
   begin
-   if not FileExists(ExpandConstant(CopyDirPage.Values[0] + '\Desperados III.exe')) then begin
-     MsgBox('O execut·vel Desperados III.exe n„o foi encontrado nessa pasta. Rode a instalaÁ„o novamente apontando para a pasta correta.', mbError, MB_OK);
+   if not FileExists(ExpandConstant(CopyDirPage.Values[0] + '\Desperados III.exe')) then
+    begin
+     MsgBox('O execut√°vel Desperados III.exe n√£o foi encontrado nessa pasta. Rode a instala√ß√£o novamente apontando para a pasta correta.', mbError, MB_OK);
      ExitProcess(7);
-   end;
- end;
+    end;
+  end;
 end;
 
-[Files]
-Source: C:\GBJ\keyboard\*; DestDir: {code:CopyDir}\Desperados III_Data\StreamingAssets\keyboard; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: C:\GBJ\loca\*; DestDir: {code:CopyDir}\Desperados III_Data\StreamingAssets\loca; Flags: ignoreversion recursesubdirs createallsubdirs
-
-[Icons]
-Name: {group}\{cm:UninstallProgram,{#MyAppName}}; Filename: {uninstallexe}
-
 [Messages]
+BeveledLabel=‚ÄπTradu√ß√µes gBj‚Ä∫
 WizardLicense=Termos de Uso
-LicenseLabel3=Por favor leia o seguinte Termo de Uso. VocÍ deve aceitar os termos de uso antes de continuar com a instalaÁ„o.
+LicenseLabel3=Por favor leia o seguinte Termo de Uso. Voc√™ deve aceitar os termos de uso antes de continuar com a instala√ß√£o.
 LicenseAccepted=Eu &aceito os termos
-LicenseNotAccepted=Eu &n„o aceito os termos
-WizardInfoBefore=CrÈditos da TraduÁ„o
-WelcomeLabel1=Bem-vindo ao instalador da TraduÁ„o de Desperados 3
-WelcomeLabel2=Este assistente guiar· vocÍ atravÈs da instalaÁ„o da [name/ver] em seu computador. Para continuar, clique em AvanÁar.
-ClickNext=AVISO: … recomendado que vocÍ feche o jogo e faÁa um BACKUP dos arquivos da pasta \Desperados III_Data\StreamingAssets\loca antes de iniciar a InstalaÁ„o. Isto tornar· possÌvel atualizar ou restaurar os arquivos do jogo sem nenhum problema.
-ReadyLabel1=O instalador est· agora pronto pra comeÁar a instalar a [name] no seu computador.
-ReadyLabel2b=AVISO: %nVerifique se o caminho escolhido para a instalaÁ„o encontra-se o arquivo execut·vel "Desperados III.exe".%n%nClique em Instalar pra concluir a instalaÁ„o ou clique em Voltar se vocÍ quer alterar o caminho da pasta a ser instalada.%n%n
+LicenseNotAccepted=Eu &n√£o aceito os termos
+WizardInfoBefore=Cr√©ditos da Tradu√ß√£o
+WelcomeLabel1=Bem-vindo ao instalador da Tradu√ß√£o de Desperados 3
+WelcomeLabel2=Este assistente guiar√° voc√™ atrav√©s da instala√ß√£o da [name/ver] em seu computador. Para continuar, clique em Avan√ßar.
+ClickNext=AVISO: √â recomendado que voc√™ feche o jogo e fa√ßa um BACKUP dos arquivos da pasta \Desperados III_Data\StreamingAssets\loca antes de iniciar a Instala√ß√£o. Isto tornar√° poss√≠vel atualizar ou restaurar os arquivos do jogo sem nenhum problema.
+ReadyLabel1=O instalador est√° agora pronto pra come√ßar a instalar a [name] no seu computador.
+ReadyLabel2b=AVISO: %nVerifique se o caminho escolhido para a instala√ß√£o encontra-se o arquivo execut√°vel "Desperados III.exe".%n%nClique em Instalar pra concluir a instala√ß√£o ou clique em Voltar se voc√™ quer alterar o caminho da pasta a ser instalada.%n%n
 InstallingLabel=Por favor espere enquanto o instalador instala a [name] no seu computador.
-FinishedHeadingLabel=A instalaÁ„o da [name] foi concluÌda
-FinishedLabel=O instalador terminou de instalar a [name] no seu computador. O jogo j· pode ser iniciado. Divirta-se.
+FinishedHeadingLabel=A instala√ß√£o da [name] foi conclu√≠da
+FinishedLabel=O instalador terminou de instalar a [name] no seu computador. O jogo j√° pode ser iniciado. Divirta-se.
 InfoBeforeClickLabel=Lista dos participantes do projeto
-InfoBeforeLabel=Por favor leia as seguintes informaÁıes antes de avanÁar.
-ExitSetupMessage=A InstalaÁ„o n„o foi concluÌda. Se vocÍ sair agora a TraduÁ„o n„o ser· instalada.%n%nVocÍ pode executar o instalador de novo outra hora pra completar a instalaÁ„o.%n%nSair do instalador?
+InfoBeforeLabel=Por favor leia as seguintes informa√ß√µes antes de avan√ßar.
+ExitSetupMessage=A Instala√ß√£o n√£o foi conclu√≠da. Se voc√™ sair agora a Tradu√ß√£o n√£o ser√° instalada.%n%nVoc√™ pode executar o instalador de novo outra hora pra completar a instala√ß√£o.%n%nSair do instalador?
